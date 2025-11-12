@@ -1,0 +1,91 @@
+package com.ecomerce.domain.item.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ecomerce.common.response.ApiResponse;
+import com.ecomerce.domain.item.dto.ItemDto;
+import com.ecomerce.domain.item.service.ItemService;
+
+import org.springframework.http.ResponseEntity;
+
+@RestController
+@RequestMapping("/api/item")
+public class ItemController {
+
+    @Autowired
+    private ItemService itemService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ItemDto>> create(@RequestBody ItemDto itemDto) {
+        try {
+        	itemService.createItem(itemDto);
+            ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 등록 성공", itemDto);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 등록 실패: " + e.getMessage(), itemDto);
+            return ResponseEntity.badRequest().body(response); // TODO: 500 error로 수정
+        }
+    }
+    
+    @PutMapping
+    public ResponseEntity<ApiResponse<ItemDto>> update(@RequestBody ItemDto itemDto) {
+        try {
+            ItemDto updatedItem = itemService.updateItem(itemDto);
+            ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 수정 성공", updatedItem);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<ItemDto> response = new ApiResponse<>(false, "상품 수정 실패: " + e.getMessage(), itemDto);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PatchMapping("/{itemId}")
+    public ResponseEntity<ApiResponse<ItemDto>> delete(@PathVariable("itemId") Long itemId) {
+        try {
+            ItemDto deletedItem = itemService.deleteItem(itemId);
+            ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 삭제 성공", deletedItem);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<ItemDto> response = new ApiResponse<>(false, "상품 삭제 실패: " + e.getMessage(), null);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @GetMapping()
+    public ResponseEntity<ApiResponse<List<ItemDto>>> getAll() {
+        try {
+        	List<ItemDto> itemList = itemService.getAllItems();
+            ApiResponse<List<ItemDto>> response = new ApiResponse<>(true, "상품 전체 조회 성공", itemList);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<List<ItemDto>> response = new ApiResponse<>(true, "상품 전체 조회 실패", null);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ApiResponse<ItemDto>> getOne(@PathVariable("itemId") Long itemId) {
+        try {
+            ItemDto item = itemService.getItemById(itemId);
+            ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 조회 성공", item);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse<ItemDto> response = new ApiResponse<>(false, "상품 조회 실패: " + e.getMessage(), null);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+
+}
+
