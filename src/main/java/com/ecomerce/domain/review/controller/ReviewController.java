@@ -30,10 +30,6 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
     
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
-
     // 리뷰 작성
     @PostMapping
     public ResponseEntity<ApiResponse<ReviewDto>> createReview(@RequestBody ReviewDto reviewDto) {

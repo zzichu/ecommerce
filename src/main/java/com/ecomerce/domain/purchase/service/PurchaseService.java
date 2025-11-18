@@ -1,6 +1,5 @@
 package com.ecomerce.domain.purchase.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,17 +15,13 @@ import com.ecomerce.domain.purchase.entity.PurchaseItemEntity;
 import com.ecomerce.domain.purchase.enums.DeliveryStatus;
 import com.ecomerce.domain.purchase.repository.PurchaseDetailRepository;
 import com.ecomerce.domain.purchase.repository.PurchaseItemRepository;
-import com.ecomerce.domain.item.dto.ItemDto;
 import com.ecomerce.domain.item.entity.ItemEntity;
 
 @Service
 public class PurchaseService {
-    
-    private final ItemRepository itemRepository;
-
-    public PurchaseService(ItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
+	
+	@Autowired
+    private ItemRepository itemRepository;
     
     @Autowired
     private PurchaseItemRepository purchaseItemRepository;
@@ -36,29 +31,27 @@ public class PurchaseService {
 
     @Transactional
     public boolean purchaseItem(PurchaseItemDto purchaseItemDto, PurchaseDetailDto purchaseDetailDto) {
-	    Optional<ItemEntity> itemOpt = itemRepository.findById(purchaseItemDto.getItemId());
-	    if (itemOpt.isEmpty()) {
-	    	return false;
-	    } //TODO: orElseThrow.. supply방식 찾아보기 자바 optional 처리 방식
 
-	    PurchaseItemEntity purchaseItem = PurchaseItemEntity.builder()
-	    				.purchaseId(purchaseItemDto.getPurchaseId())
-	    				.itemId(purchaseItemDto.getItemId())
-	    				.build();
-	    purchaseItemRepository.save(purchaseItem);
-	    
-	    // DTO -> Entity로 변환
-	    PurchaseDetailEntity purchaseDetail = PurchaseDetailEntity.builder()
-	    				.purchaseId(purchaseDetailDto.getPurchaseId())
-	    				.userId(purchaseDetailDto.getUserId())
-	        			.purchaseDate(purchaseDetailDto.getPurchaseDate())
-	        			.deliveryStatus(purchaseDetailDto.getDeliveryStatus())
-	        			.build();
-	    purchaseDetailRepository.save(purchaseDetail);
+        ItemEntity item = itemRepository.findById(purchaseItemDto.getItemId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+        
+        PurchaseDetailEntity purchaseDetail = PurchaseDetailEntity.builder()
+                .userId(purchaseDetailDto.getUserId())
+                .purchaseDate(purchaseDetailDto.getPurchaseDate())
+                .deliveryStatus(purchaseDetailDto.getDeliveryStatus())
+                .build();
+        purchaseDetail = purchaseDetailRepository.save(purchaseDetail);  
+        
+        PurchaseItemEntity purchaseItem = PurchaseItemEntity.builder()
+            .purchaseId(purchaseDetail.getPurchaseId())
+            .itemId(purchaseItemDto.getItemId())
+            .build();
+        purchaseItemRepository.save(purchaseItem);
 
-	    return true;	
+        return true;
     }
-    
+
+
     @Transactional(readOnly = true)
     public List<PurchaseDetailDto> getAllPurchases() {
         return purchaseDetailRepository.findAll().stream()
@@ -70,7 +63,7 @@ public class PurchaseService {
                 .build())
             .collect(Collectors.toList());
     }
-    
+
     @Transactional(readOnly = true)
     public Optional<PurchaseDetailDto> getPurchaseById(Long purchaseId) {
         return purchaseDetailRepository.findById(purchaseId)
@@ -84,15 +77,10 @@ public class PurchaseService {
 
     @Transactional
     public boolean updateDeliveryStatus(Long purchaseId, DeliveryStatus newStatus) {
-        Optional<PurchaseDetailEntity> optionalDetail = purchaseDetailRepository.findById(purchaseId);
-        if (optionalDetail.isEmpty()) {
-            return false;
-        } // TODO: orElseThrow..
-
-        PurchaseDetailEntity detail = optionalDetail.get();
-        detail.setDeliveryStatus(newStatus); // TODO: set말고 entity메소드사용
-        purchaseDetailRepository.save(detail);
-
+        PurchaseDetailEntity entity = purchaseDetailRepository.findById(purchaseId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구매 내역입니다."));
+        entity.changeDeliveryStatus(newStatus);
+        purchaseDetailRepository.save(entity);
         return true;
     }
 

@@ -1,7 +1,6 @@
 package com.ecomerce.domain.purchase.entity;
 
 import jakarta.persistence.*;
-import com.ecomerce.domain.purchase.id.PurchaseItemId;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @Builder
-@IdClass(PurchaseItemId.class)
 @Table(name = "purchase_item")
+@IdClass(PurchaseCompositeId.class)
 public class PurchaseItemEntity {
     @Id
     private Long purchaseId;

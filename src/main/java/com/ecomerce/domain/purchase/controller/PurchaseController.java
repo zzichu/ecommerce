@@ -42,7 +42,7 @@ public class PurchaseController {
     }
     
     // 상품 구매 내역 전체 조회
-    @GetMapping //TODO: 
+    @GetMapping
     public ResponseEntity<ApiResponse<List<PurchaseDetailDto>>> getAllPurchases() {
         try {
             List<PurchaseDetailDto> items = purchaseService.getAllPurchases();
