@@ -30,14 +30,9 @@ public class AuthController {
 
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<UserDto>> join(@RequestBody UserDto userDto) {
-        try {
-        	authService.registerUser(userDto);
-            ApiResponse<UserDto> response = new ApiResponse<>(true, "로그인 성공", userDto);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<UserDto> response = new ApiResponse<>(true, "로그인 실패", userDto);
-            return ResponseEntity.badRequest().body(response);
-        }
+        authService.registerUser(userDto);
+        ApiResponse<UserDto> response = new ApiResponse<>(true, "로그인 성공", userDto);
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/{userId}")
@@ -56,14 +51,9 @@ public class AuthController {
     
     @PatchMapping("/user")
     public ResponseEntity<ApiResponse<UserDto>> withDraw(@RequestParam Long userId) {
-        try {
-        	authService.withDraw(userId);
-            ApiResponse<UserDto> response = new ApiResponse<>(true, "회원 탈퇴 성공", null);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<UserDto> response = new ApiResponse<>(true, "회원 탈퇴 실패", null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        authService.withDraw(userId);
+        ApiResponse<UserDto> response = new ApiResponse<>(true, "회원 탈퇴 성공", null);
+        return ResponseEntity.ok(response);
     }
     
 }

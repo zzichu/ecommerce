@@ -28,67 +28,43 @@ public class CouponController {
     // 쿠폰 등록
     @PostMapping
     public ResponseEntity<ApiResponse<CouponDto>> createCoupon(@RequestBody CouponDto couponDto) {
-        try {
-            couponService.createCoupon(couponDto);
-            ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 등록 성공", couponDto);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<CouponDto> response = new ApiResponse<>(false, "쿠폰 등록 실패: " + e.getMessage(), couponDto);
-            return ResponseEntity.badRequest().body(response);
-        }
+        couponService.createCoupon(couponDto);
+        ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 등록 성공", couponDto);
+        return ResponseEntity.ok(response);
+    
     }
 
     // 쿠폰 수정
     @PutMapping //TODO: PATCH와 PUT 차이 찾아보기
     //TODO: ResponseEntity 찾아보기..
     public ResponseEntity<ApiResponse<CouponDto>> updateCoupon(@RequestBody CouponDto couponDto) {
-        try {
-            CouponDto updated = couponService.updateCoupon(couponDto);
-            ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 수정 성공", updated);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<CouponDto> response = new ApiResponse<>(false, "쿠폰 수정 실패: " + e.getMessage(), couponDto);
-            return ResponseEntity.badRequest().body(response);
-        }
+        CouponDto updated = couponService.updateCoupon(couponDto);
+        ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 수정 성공", updated);
+        return ResponseEntity.ok(response);
     }
 
     // 쿠폰 삭제
     @PatchMapping("/{couponId}")
     public ResponseEntity<ApiResponse<CouponDto>> deleteCoupon(@PathVariable Long couponId) {
-        try {
-            CouponDto deleted = couponService.deleteCoupon(couponId);
-            ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 삭제 성공", deleted);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<CouponDto> response = new ApiResponse<>(false, "쿠폰 삭제 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        CouponDto deleted = couponService.deleteCoupon(couponId);
+        ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 삭제 성공", deleted);
+        return ResponseEntity.ok(response);
     }
     
     // 쿠폰 조회
     @GetMapping("/{userId}/{couponId}")
     public ResponseEntity<ApiResponse<CouponDto>> getCoupon(@PathVariable Long userId, @PathVariable Long couponId) {
-        try {
-            CouponDto coupon = couponService.getCouponByUserIdAndCouponId(userId, couponId);
-            ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 조회 성공", coupon);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<CouponDto> response = new ApiResponse<>(false, "쿠폰 조회 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        CouponDto coupon = couponService.getCouponByUserIdAndCouponId(userId, couponId);
+        ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 조회 성공", coupon);
+        return ResponseEntity.ok(response);
     }
 
     // 쿠폰 사용 처리
     @PostMapping("/{userId}/{couponId}")
     public ResponseEntity<ApiResponse<CouponDto>> useCoupon(@PathVariable Long userId, @PathVariable Long couponId) {
-        try {
-            CouponDto updated = couponService.useCoupon(userId, couponId);
-            ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 사용 완료", updated);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<CouponDto> response = new ApiResponse<>(false, "쿠폰 사용 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        CouponDto updated = couponService.useCoupon(userId, couponId);
+        ApiResponse<CouponDto> response = new ApiResponse<>(true, "쿠폰 사용 완료", updated);
+        return ResponseEntity.ok(response);
     }
 }
 

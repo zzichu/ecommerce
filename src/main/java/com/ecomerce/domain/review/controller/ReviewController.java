@@ -33,66 +33,41 @@ public class ReviewController {
     // 리뷰 작성
     @PostMapping
     public ResponseEntity<ApiResponse<ReviewDto>> createReview(@RequestBody ReviewDto reviewDto) {
-        try {
-            reviewService.createReview(reviewDto);
-            ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 작성 성공", reviewDto);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<ReviewDto> response = new ApiResponse<>(false, "리뷰 작성 실패: " + e.getMessage(), reviewDto);
-            return ResponseEntity.badRequest().body(response);
-        }
+        reviewService.createReview(reviewDto);
+        ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 작성 성공", reviewDto);
+        return ResponseEntity.ok(response);
     }
 
     // 리뷰 수정
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<ReviewDto>> updateReview(@RequestBody ReviewDto reviewDto) {
-        try {
-            ReviewDto updated = reviewService.updateReview(reviewDto);
-            ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 수정 성공", updated);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<ReviewDto> response = new ApiResponse<>(false, "리뷰 수정 실패: " + e.getMessage(), reviewDto);
-            return ResponseEntity.badRequest().body(response);
-        }
+        ReviewDto updated = reviewService.updateReview(reviewDto);
+        ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 수정 성공", updated);
+        return ResponseEntity.ok(response);
     }
 
     // 리뷰 삭제
     @PatchMapping("/{reviewId}")
     public ResponseEntity<ApiResponse<ReviewDto>> deleteReview(@PathVariable Long reviewId) {
-        try {
-            ReviewDto deletedReview = reviewService.deleteReview(reviewId);
-            ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 삭제 성공", deletedReview);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<ReviewDto> response = new ApiResponse<>(false, "리뷰 삭제 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
+        ReviewDto deletedReview = reviewService.deleteReview(reviewId);
+        ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 삭제 성공", deletedReview);
+        return ResponseEntity.ok(response);
+    }   
 
     // 특정 상품에 대한 리뷰 전체 조회
     @GetMapping("/{itemId}")
     public ResponseEntity<ApiResponse<List<ReviewDto>>> getReviewsByItem(@PathVariable Long itemId) {
-        try {
-            List<ReviewDto> reviews = reviewService.getReviewsByItemId(itemId);
-            ApiResponse<List<ReviewDto>> response = new ApiResponse<>(true, "상품 리뷰 전체 조회 성공", reviews);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<List<ReviewDto>> response = new ApiResponse<>(false, "상품 리뷰 조회 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        List<ReviewDto> reviews = reviewService.getReviewsByItemId(itemId);
+        ApiResponse<List<ReviewDto>> response = new ApiResponse<>(true, "상품 리뷰 전체 조회 성공", reviews);
+        return ResponseEntity.ok(response);
     }
 
     // 리뷰 단건 조회
     @GetMapping("/{reviewId}")
     public ResponseEntity<ApiResponse<ReviewDto>> getReviewById(@PathVariable Long reviewId) {
-        try {
-            ReviewDto review = reviewService.getReviewById(reviewId);
-            ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 조회 성공", review);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<ReviewDto> response = new ApiResponse<>(false, "리뷰 조회 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
-        }
+        ReviewDto review = reviewService.getReviewById(reviewId);
+        ApiResponse<ReviewDto> response = new ApiResponse<>(true, "리뷰 조회 성공", review);
+        return ResponseEntity.ok(response);
     }
 
 }

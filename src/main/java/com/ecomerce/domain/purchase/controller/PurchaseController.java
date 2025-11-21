@@ -31,27 +31,18 @@ public class PurchaseController {
     // 상품 구매
     @PostMapping
     public ResponseEntity<ApiResponse<PurchaseRequestDto>> purchaseItem(@RequestBody PurchaseRequestDto purchaseRequestDto) {
-        try {
-            purchaseService.purchaseItem(purchaseRequestDto.getPurchaseItemDto(), purchaseRequestDto.getPurchaseDetailDto());
-            ApiResponse<PurchaseRequestDto> response = new ApiResponse<>(true, "구매 성공", purchaseRequestDto);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<PurchaseRequestDto> response = new ApiResponse<>(false, "구매 실패", purchaseRequestDto);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        purchaseService.purchaseItem(purchaseRequestDto.getPurchaseItemDto(), purchaseRequestDto.getPurchaseDetailDto());
+        ApiResponse<PurchaseRequestDto> response = new ApiResponse<>(true, "구매 성공", purchaseRequestDto);
+        return ResponseEntity.ok(response);
     }
     
     // 상품 구매 내역 전체 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<PurchaseDetailDto>>> getAllPurchases() {
-        try {
-            List<PurchaseDetailDto> items = purchaseService.getAllPurchases();
-            ApiResponse<List<PurchaseDetailDto>> response = new ApiResponse<>(true, "상품 구매 내역 전체 조회 성공", items);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<List<PurchaseDetailDto>> response = new ApiResponse<>(false, "상품 구매 내역 전체 조회 실패", null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        List<PurchaseDetailDto> items = purchaseService.getAllPurchases();
+        ApiResponse<List<PurchaseDetailDto>> response = new ApiResponse<>(true, "상품 구매 내역 전체 조회 성공", items);
+        return ResponseEntity.ok(response);
+    
     }
 
     // 상품 구매 내역 단건 조회
@@ -71,18 +62,13 @@ public class PurchaseController {
     @PatchMapping("/{purchaseId}/status")
     public ResponseEntity<ApiResponse<Void>> updateDeliveryStatus(
             @PathVariable("purchaseId") Long purchaseId, @RequestBody DeliveryStatus newStatus) {
-        try {
-            boolean updated = purchaseService.updateDeliveryStatus(purchaseId, newStatus);
-            if (!updated) {
-                ApiResponse<Void> response = new ApiResponse<>(false, "구매 내역을 찾을 수 없습니다", null);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            ApiResponse<Void> response = new ApiResponse<>(true, "배송 상태 수정 성공", null);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            ApiResponse<Void> response = new ApiResponse<>(false, "배송 상태 수정 실패: " + e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
+        boolean updated = purchaseService.updateDeliveryStatus(purchaseId, newStatus);
+        if (!updated) {
+            ApiResponse<Void> response = new ApiResponse<>(false, "구매 내역을 찾을 수 없습니다", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+        ApiResponse<Void> response = new ApiResponse<>(true, "배송 상태 수정 성공", null);
+        return ResponseEntity.ok(response);
     }
 
 
