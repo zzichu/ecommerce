@@ -37,9 +37,7 @@ public class ReviewService {
     public ReviewDto updateReview(ReviewDto reviewDto) {
         ReviewEntity entity = reviewRepository.findById(reviewDto.getReviewId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 리뷰입니다."));
-        entity.setReviewScore(reviewDto.getReviewScore());
-        entity.setComment(reviewDto.getComment());
-        entity.setDeletedStatus(reviewDto.getDeletedStatus()); //TODO: set바꾸기
+        entity.updateReview(reviewDto);
         reviewRepository.save(entity);
 
         return ReviewDto.builder()
@@ -60,7 +58,7 @@ public class ReviewService {
     public ReviewDto deleteReview(Long reviewId) {
         ReviewEntity review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 리뷰입니다."));
-        review.setDeletedStatus(1); // 1=삭제됨 // TODO: set바꾸기..
+        review.deleteReview(); // 1=삭제됨 // TODO: set바꾸기..(수정완)
         
         reviewRepository.save(review);
 

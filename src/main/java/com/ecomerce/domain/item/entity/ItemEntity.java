@@ -8,6 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.ecomerce.domain.item.dto.ItemDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,5 +61,14 @@ public class ItemEntity {
 
     @Column(name = "deleted_status")
     private Boolean deletedStatus = false;
-
+    
+    public void updateItem(ItemDto itemDto) {
+        this.itemName = itemDto.getItemName();
+        this.itemPrice = itemDto.getItemPrice();
+        this.description = itemDto.getDescription();
+        this.itemImageUrl = itemDto.getItemImageUrl();
+        this.modificationUser = itemDto.getModificationUser();
+        this.modifiedDate = itemDto.getModifiedDate() != null ? itemDto.getModifiedDate() : LocalDateTime.now();
+        this.deletedStatus = itemDto.getDeletedStatus() != null ? itemDto.getDeletedStatus() : this.deletedStatus;
+    }
 }

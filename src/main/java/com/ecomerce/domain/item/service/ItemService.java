@@ -53,15 +53,8 @@ public class ItemService {
 
         ItemEntity itemEntity = itemRepository.findById(itemId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다."));
-        // TODO: setter대신 정적팩토리 메소드 쓰는 이유
-        itemEntity.setItemName(itemDto.getItemName());
-        itemEntity.setItemPrice(itemDto.getItemPrice());
-        itemEntity.setDescription(itemDto.getDescription());
-        itemEntity.setItemImageUrl(itemDto.getItemImageUrl());
-        itemEntity.setModificationUser(itemDto.getModificationUser());
-        itemEntity.setModifiedDate(itemDto.getModifiedDate() != null ? itemDto.getModifiedDate() : LocalDateTime.now());
-        itemEntity.setDeletedStatus(itemDto.getDeletedStatus() != null ? itemDto.getDeletedStatus() : itemEntity.getDeletedStatus());
-
+        // TODO: setter대신 정적팩토리 메소드 쓰는 이유 (수정 완료)
+        itemEntity.updateItem(itemDto);
         itemRepository.save(itemEntity);
 
         return ItemDto.builder()
@@ -107,8 +100,8 @@ public class ItemService {
     // 상품 전체 조회
     @Transactional(readOnly = true)
     public List<ItemDto> getAllItems() {
-    	// java map 병렬처리
-    	// for문과 stream의 차이
+    	// TODO: java map 병렬처리
+    	// TODO : for문과 stream의 차이
         return itemRepository.findAllByDeletedStatusFalse()
                 .stream()
                 .map(itemEntity -> ItemDto.builder()

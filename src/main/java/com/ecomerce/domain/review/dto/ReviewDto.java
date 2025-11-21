@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReviewDto {
     private Long reviewId;
-    private String reviewScore;
+    private Integer reviewScore;
     private Long purchaseId;
     private Long itemId;
     private String comment;
@@ -26,10 +26,10 @@ public class ReviewDto {
 	public void setReviewId(Long reviewId) {
 		this.reviewId = reviewId;
 	}
-	public String getReviewScore() {
+	public Integer getReviewScore() {
 		return reviewScore;
 	}
-	public void setReviewScore(String reviewScore) {
+	public void setReviewScore(Integer reviewScore) {
 		this.reviewScore = reviewScore;
 	}
 	public Long getPurchaseId() {

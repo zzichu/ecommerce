@@ -47,16 +47,8 @@ public class CouponService {
         CouponEntity entity = couponRepository.findById(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
        
-        //TODO: set 안쓰는 이유
-        entity.setCouponName(couponDto.getCouponName());
-        entity.setDiscountRate(couponDto.getDiscountRate());
-        entity.setUsedDate(couponDto.getUsedDate());
-        entity.setUserId(couponDto.getUserId());
-        entity.setStartedDate(couponDto.getStartedDate());
-        entity.setEndedDate(couponDto.getEndedDate());
-        entity.setCreationUser(couponDto.getCreationUser());
-        entity.setDeletedStatus(couponDto.getDeletedStatus() != 1 ? couponDto.getDeletedStatus() : entity.getDeletedStatus());
-
+        //TODO: set 안쓰는 이유 (수정완)
+        entity.update(couponDto);
         couponRepository.save(entity);
 
         return CouponDto.builder()
@@ -77,7 +69,7 @@ public class CouponService {
     public CouponDto deleteCoupon(Long couponId) {
         CouponEntity entity = couponRepository.findById(couponId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
-        entity.setDeletedStatus(1); //TODO: 메소드 바꾸기 (설명까지)
+        entity.delete(); //TODO: 메소드 바꾸기 (수정완) (다음 시간 설명까지) 
         
         couponRepository.save(entity);
 

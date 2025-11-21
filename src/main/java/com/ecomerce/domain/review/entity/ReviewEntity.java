@@ -14,6 +14,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.ecomerce.domain.review.dto.ReviewDto;
+
 
 @Getter
 @Setter
@@ -29,7 +31,7 @@ public class ReviewEntity {
     private Long reviewId;
 
     @Column(name = "review_score")
-    private String reviewScore;
+    private Integer reviewScore;
 
     @Column(name = "purchase_id", nullable = false)
     private Long purchaseId;
@@ -56,4 +58,13 @@ public class ReviewEntity {
     @Column(name = "deleted_status")
     private int deletedStatus;
 
+    public void updateReview(ReviewDto reviewDto) {
+        this.reviewScore = reviewDto.getReviewScore();
+        this.comment = reviewDto.getComment();
+        this.deletedStatus = reviewDto.getDeletedStatus();
+    }
+
+    public void deleteReview() {
+        this.deletedStatus = 1;
+    }
 }

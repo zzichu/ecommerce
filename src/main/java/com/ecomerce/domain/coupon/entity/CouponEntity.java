@@ -9,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.ecomerce.domain.coupon.dto.CouponDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,4 +65,17 @@ public class CouponEntity {
     @Column(name = "deleted_status")
     private int deletedStatus = 0;
 
+     public void update(CouponDto couponDto) {
+        this.couponName = couponDto.getCouponName();
+        this.discountRate = couponDto.getDiscountRate();
+        this.usedDate = couponDto.getUsedDate();
+        this.userId = couponDto.getUserId();
+        this.startedDate = couponDto.getStartedDate();
+        this.endedDate = couponDto.getEndedDate();
+        this.creationUser = couponDto.getCreationUser();
+    }
+
+    public void delete() {
+        this.deletedStatus = 1;
+    }
 }

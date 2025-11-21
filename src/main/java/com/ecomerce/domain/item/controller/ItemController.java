@@ -34,7 +34,7 @@ public class ItemController {
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             ApiResponse<ItemDto> response = new ApiResponse<>(true, "상품 등록 실패: " + e.getMessage(), itemDto);
-            return ResponseEntity.badRequest().body(response); // TODO: 500 error로 수정
+            return ResponseEntity.badRequest().body(response); 
         }
     }
     
