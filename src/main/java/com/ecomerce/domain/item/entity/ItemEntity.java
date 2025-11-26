@@ -2,6 +2,8 @@ package com.ecomerce.domain.item.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -52,17 +54,17 @@ public class ItemEntity {
 
     @Column(name = "modification_user", length = 100)
     private String modificationUser;
-
-
+   
+    //TODO: created date, modified date common으로 빼기
     @Column(name = "modified_date")
     @LastModifiedBy
     @LastModifiedDate
     private LocalDateTime modifiedDate;
-
+   
     @Column(name = "deleted_status")
     private Boolean deletedStatus = false;
-    
-    public void updateItem(ItemDto itemDto) {
+
+    public void update(ItemDto itemDto) {
         this.itemName = itemDto.getItemName();
         this.itemPrice = itemDto.getItemPrice();
         this.description = itemDto.getDescription();
@@ -71,4 +73,7 @@ public class ItemEntity {
         this.modifiedDate = itemDto.getModifiedDate() != null ? itemDto.getModifiedDate() : LocalDateTime.now();
         this.deletedStatus = itemDto.getDeletedStatus() != null ? itemDto.getDeletedStatus() : this.deletedStatus;
     }
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemOptionEntity> options = new ArrayList<>();
 }

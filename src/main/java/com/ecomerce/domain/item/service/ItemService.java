@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecomerce.domain.item.repository.ItemRepository;
 import com.ecomerce.domain.item.dto.ItemDto;
 import com.ecomerce.domain.item.entity.ItemEntity;
+import com.ecomerce.domain.item.entity.ItemOptionEntity;
 
 @Service
 public class ItemService {
@@ -19,7 +20,6 @@ public class ItemService {
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
-    
     
     // 상품 등록
     @Transactional
@@ -41,6 +41,24 @@ public class ItemService {
 	                .build(); //불변성이 있어서, 가독성 좋음
 
         itemRepository.save(itemEntity);
+
+        List<ItemOptionEntity> optionEntities = itemDto.getOptions().stream()
+            .map(optionDto -> {
+                ItemOptionEntity optionEntity = ItemOptionEntity.builder()
+                    .optionName(optionDto.getOptionName())
+                    .optionQuantity(optionDto.getOptionQuantity())
+                    .item(itemEntity)   // 연관관계 설정
+                    .createdDate(optionDto.getCreatedDate())
+                    .modifiedDate(optionDto.getModifiedDate())
+                    .deletedStatus(optionDto.getDeletedStatus() != null ? optionDto.getDeletedStatus() : false)
+                    .creationUser(optionDto.getCreationUser())
+                    .modificationUser(optionDto.getModificationUser())
+                    .build();
+                return optionEntity;
+            }).collect(Collectors.toList());
+
+        itemEntity.setOptions(optionEntities);
+
     }
     
     // 상품 수정
@@ -51,23 +69,23 @@ public class ItemService {
             throw new IllegalArgumentException("아이템 ID가 없습니다.");
         }
 
-        ItemEntity itemEntity = itemRepository.findById(itemId)
+        ItemEntity item = itemRepository.findById(itemId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다."));
         // TODO: setter대신 정적팩토리 메소드 쓰는 이유 (수정 완료)
-        itemEntity.updateItem(itemDto);
-        itemRepository.save(itemEntity);
+        item.update(itemDto);
+        itemRepository.save(item);
 
         return ItemDto.builder()
-                .itemId(itemEntity.getItemId())
-                .itemName(itemEntity.getItemName())
-                .itemPrice(itemEntity.getItemPrice())
-                .description(itemEntity.getDescription())
-                .itemImageUrl(itemEntity.getItemImageUrl())
-                .creationUser(itemEntity.getCreationUser())
-                .modificationUser(itemEntity.getModificationUser())
-                .createdDate(itemEntity.getCreatedDate())
-                .modifiedDate(itemEntity.getModifiedDate())
-                .deletedStatus(itemEntity.getDeletedStatus())
+                .itemId(item.getItemId())
+                .itemName(item.getItemName())
+                .itemPrice(item.getItemPrice())
+                .description(item.getDescription())
+                .itemImageUrl(item.getItemImageUrl())
+                .creationUser(item.getCreationUser())
+                .modificationUser(item.getModificationUser())
+                .createdDate(item.getCreatedDate())
+                .modifiedDate(item.getModifiedDate())
+                .deletedStatus(item.getDeletedStatus())
                 .build();
     }
     
@@ -78,9 +96,7 @@ public class ItemService {
         ItemEntity itemEntity = itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다."));
 
-        itemEntity.setDeletedStatus(true);
-        // TODO: JPAAudicting
-        itemEntity.setModifiedDate(LocalDateTime.now());
+        itemEntity.setDeletedStatus(true); //TODO: setter 수정
         itemRepository.save(itemEntity);
 
         return ItemDto.builder()
@@ -101,7 +117,7 @@ public class ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> getAllItems() {
     	// TODO: java map 병렬처리
-    	// TODO : for문과 stream의 차이
+    	// TODO : for문과 stream의 차이 (조금 더 깊게)
         return itemRepository.findAllByDeletedStatusFalse()
                 .stream()
                 .map(itemEntity -> ItemDto.builder()
