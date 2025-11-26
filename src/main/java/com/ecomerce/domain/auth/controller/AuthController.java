@@ -1,5 +1,8 @@
 package com.ecomerce.domain.auth.controller;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecomerce.common.response.ApiResponse;
 import com.ecomerce.domain.auth.dto.LoginRequest;
+import com.ecomerce.domain.auth.dto.TokenDto;
 import com.ecomerce.domain.auth.dto.UserDto;
 import com.ecomerce.domain.auth.service.AuthService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @RestController
@@ -43,11 +48,14 @@ public class AuthController {
     }
         
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDto>> login(@RequestBody LoginRequest loginRequest) {
-        UserDto user = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        ApiResponse<UserDto> response = new ApiResponse<>(true, "로그인 성공", user);
-        return ResponseEntity.badRequest().body(response);
+    public ResponseEntity<TokenDto> login(@RequestBody LoginRequest loginRequest) {
+        String jwt = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwt);
+        TokenDto tokenDto = new TokenDto(jwt);
+        return new ResponseEntity<>(tokenDto, headers, HttpStatus.OK);
     }
+
     
     @PatchMapping("/user")
     public ResponseEntity<ApiResponse<UserDto>> withDraw(@RequestParam Long userId) {

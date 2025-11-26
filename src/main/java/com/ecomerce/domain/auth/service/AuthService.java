@@ -3,22 +3,33 @@ package com.ecomerce.domain.auth.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ecomerce.domain.auth.repository.AuthRepository;
 import com.ecomerce.domain.auth.entity.UserEntity;
+import com.ecomerce.common.security.JwtTokenProvider;
+import com.ecomerce.domain.auth.dto.TokenDto;
 import com.ecomerce.domain.auth.dto.UserDto;
+import org.springframework.security.core.Authentication;
 
 @Service
 public class AuthService {
     
     private final AuthRepository authRepository;
 
-    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(AuthRepository authRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.authRepository = authRepository;
+        this.authenticationManager = authenticationManager;
 		this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
+
     }
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+
     
     private final PasswordEncoder passwordEncoder;
     
@@ -57,9 +68,8 @@ public class AuthService {
                 .build();
     }
     
-    // TODO : JWT토큰, spring security 강의 듣고 적용..
-    @Transactional(readOnly = true) 
-    public UserDto login(String email, String password) { 
+    @Transactional(readOnly = true)
+    public String login(String email, String password) {
         UserEntity userEntity = authRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
@@ -67,17 +77,16 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        return UserDto.builder()
-                .userId(userEntity.getUserId())
-                .email(userEntity.getEmail())
-                .userRole(userEntity.getUserRole())
-                .addressRoad(userEntity.getAddressRoad())
-                .addressDetail(userEntity.getAddressDetail())
-                .created_date(userEntity.getCreatedDate())
-                .modified_date(userEntity.getModifiedDate())
-                .deleted_status(userEntity.getDeletedStatus())
-                .build();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, password);
+
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        String jwt = jwtTokenProvider.createToken(authentication);
+
+        return jwt;
     }
+
 
     @Transactional
     public UserDto withDraw(Long userId) {
